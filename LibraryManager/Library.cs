@@ -1,54 +1,71 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace LibraryManager
 {
     class Library
     {
-        List<Book> books = new List<Book>();
+       private List<Book> books = new List<Book>();
 
         public void AddBook(Book book)
         {
             books.Add(book);
         }
-        public void BorrowBook(string title)
+        public void ShowBook()
         {
-            var book = books.FirstOrDefault(b => b.Title.Equals(title));
-            if (book == null)
+            if (books.Count == 0)
             {
-                Console.WriteLine($"Book {title} not found in the library.");
+                Console.WriteLine("No books in the library");
                 return;
             }
-            if (book.IsAvailable)
+
+            var groupedBooks = books.GroupBy(b => b.IsAvailable);
+
+            foreach (var group in groupedBooks)
+            {
+                Console.ForegroundColor = group.Key ? ConsoleColor.Green : ConsoleColor.Red;
+                Console.WriteLine(group.Key ? "Available Books:" : "Borrowed Books:");
+                Console.ResetColor();
+
+                foreach (var book in group)
+                {
+                    Console.WriteLine(book);
+                }
+            }
+            Console.WriteLine();
+        }
+        public void BorrowBook(string title)
+        {
+            var book = books.FirstOrDefault(b => b.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
+            if (book!= null&&book.IsAvailable)
             {
                 book.IsAvailable = false;
+                Console.ForegroundColor=ConsoleColor.Yellow;
                 Console.WriteLine($"You have borrowed '{book.Title}' by {book.Author}.");
             }
             else
             {
+                Console.ForegroundColor=ConsoleColor.Red;
                 Console.WriteLine($"Sorry {book.Title} by {book.Author} is currently not available");
             }
+            Console.ResetColor();
         }
         public void ReturnBook(string title)
         {
-            var book = books.FirstOrDefault(b => b.Title.Equals(title));
-            if (book == null)
-            {
-                Console.WriteLine($"Book {title} not found in the library.");
-                return;
-            }
-            if (!book.IsAvailable)
+            var book = books.FirstOrDefault(b => b.Title.Equals(title, StringComparison.OrdinalIgnoreCase));
+            if (book!= null && !book.IsAvailable)
             {
                 book.IsAvailable = true;
+                Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine($"You have returned '{book.Title}' by {book.Author}.");
             }
             else
             {
-                Console.WriteLine($"The book '{title}' was not borrowed from this library.");
+                Console.ForegroundColor=(ConsoleColor)ConsoleColor.Red;
+                Console.WriteLine($"Book {title} not found in the library.");
             }
+            Console.ResetColor ();
         }
     }
 }
