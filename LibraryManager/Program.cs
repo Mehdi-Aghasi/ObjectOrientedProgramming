@@ -36,7 +36,7 @@ namespace LibraryManager
 
                 if (!int.TryParse(Console.ReadLine(), out int choice))
                 {
-                    Console.WriteLine("nvalid input! Please enter a number");
+                    Console.WriteLine("The value is wrong! Please enter a number");
                     continue;
                 }
 
